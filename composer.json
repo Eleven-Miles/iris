@@ -1,0 +1,20 @@
+{
+    "name": "eleven-miles/iris",
+    "description": "A PHP WordPress package that converts images to webP on upload; by default.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "ElevenMiles\\Iris\\": "src"
+        }
+    },
+    "authors": [
+        {
+            "name": "Joe Worthington",
+            "email": "joe.worthington@elevenmiles.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2"
+    }
+}
