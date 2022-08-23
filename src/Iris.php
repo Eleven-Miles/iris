@@ -19,19 +19,17 @@ class Iris
     {
         add_action('plugins_loaded', [__CLASS__, 'check_for_offload_media']);
         // Check for offload media plugin
-        if (is_plugin_active('amazon-s3-and-cloudfront-pro/amazon-s3-and-cloudfront-pro.php')) {
-            // check if multi site
-            if (is_admin() && is_multisite()) {
-                add_filter('site_option_upload_filetypes', [__CLASS__, 'ensure_multisites_support_webp']);
-            }
-            add_filter('wp_image_editors', [__CLASS__, 'defaultToGD']);
-            add_filter('image_editor_output_format', [__CLASS__, 'setWebpAsDefaultMimeType']);
-            apply_filters('image_editor_default_mime_type', [__CLASS__, 'imageEditorDefaultMimeType']);
-
-            add_filter('wp_generate_attachment_metadata', [__CLASS__, 'originalWebpConverter'], 10, 2);
-        } else {
+        if (!is_plugin_active('amazon-s3-and-cloudfront-pro/amazon-s3-and-cloudfront-pro.php')) {
             return;
         }
+        // Check if multi site
+        if (is_admin() && is_multisite()) {
+            add_filter('site_option_upload_filetypes', [__CLASS__, 'ensure_multisites_support_webp']);
+        }
+        add_filter('wp_image_editors', [__CLASS__, 'defaultToGD']);
+        add_filter('image_editor_output_format', [__CLASS__, 'setWebpAsDefaultMimeType']);
+        apply_filters('image_editor_default_mime_type', [__CLASS__, 'imageEditorDefaultMimeType']);
+        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'originalWebpConverter'], 10, 2);
     }
 
     // Ensure all network sites include WebP support.
@@ -92,7 +90,6 @@ class Iris
 
     public static function originalWebpConverter($image_meta, $attachment_id)
     {
-
         $file = wp_get_original_image_path($attachment_id);
         $image_mime = wp_getimagesize($file)['mime'];
 
