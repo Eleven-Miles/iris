@@ -8,22 +8,6 @@ include_once(ABSPATH . 'wp-admin/includes/plugin.php');
  * Class Iris
  */
 
-// Debug function to help test and return file meta
-function debug($info)
-{
-    $message = null;
-
-    if (is_string($info) || is_int($info) || is_float($info)) {
-        $message = $info;
-    } else {
-        $message = var_export($info, true);
-    }
-
-    if ($fh = fopen(ABSPATH . '/gdwebpconvert.log', 'a')) {
-        fputs($fh, date('Y-m-d H:i:s') . " $message\n");
-        fclose($fh);
-    }
-}
 
 class Iris
 {
@@ -112,10 +96,6 @@ class Iris
         $file = wp_get_original_image_path($attachment_id);
         $image_mime = wp_getimagesize($file)['mime'];
 
-        // switch ($image_mime) {
-        //     case 'image/jpg':
-        //     case 'image/jpeg':
-
         $editor = wp_get_image_editor($file);
 
         if (is_wp_error($editor)) {
@@ -134,48 +114,16 @@ class Iris
 
             if (!isset($image_meta['original_image'])) {
                 // replace the original image path with the webp image path
-                $image_meta['original_image'] = $webp_file;
+                $image_meta['original_image'] = wp_basename($file);
             }
 
             $image_meta['file'] = $webp_file;
             wp_update_attachment_metadata($attachment_id, $image_meta);
-            debug($image_meta);
+
             update_post_meta($attachment_id, '_wp_attached_file', $webp_file);
         } else {
             error_log(__('Unable to save the original in webp format ') . $file);
         }
-        //     case 'image/png':
-
-        //         $editor = wp_get_image_editor($file);
-
-        //         if (is_wp_error($editor)) {
-        //             return $image_meta;
-        //         }
-
-        //         $upload_dir = wp_upload_dir();
-        //         $dirname = dirname($file) . '/';
-        //         $ext = '.' . pathinfo($file, PATHINFO_EXTENSION);
-        //         $wp_basename_file_ext = wp_basename($file, $ext);
-        //         $wp_basename_file = wp_basename($file);
-        //         $webp_filename = $dirname . $wp_basename_file_ext . '.webp';
-
-        //         $webp_file = str_replace(trailingslashit($upload_dir['basedir']), "", $dirname)  . $wp_basename_file_ext . '.webp';
-
-        //         if (!is_wp_error($editor->save($webp_filename))) {
-
-        //             if (!isset($image_meta['original_image'])) {
-        //                 // replace the original image path with the webp image path
-        //                 $image_meta['original_image'] = $wp_basename_file;
-        //             }
-
-        //             $image_meta['file'] = $webp_file;
-        //             wp_update_attachment_metadata($attachment_id, $image_meta);
-
-        //             update_post_meta($attachment_id, '_wp_attached_file', $webp_file);
-        //         } else {
-        //             error_log(__('Unable to save the original in webp format ') . $file);
-        //         }
-        // }
 
         return $image_meta;
     }
