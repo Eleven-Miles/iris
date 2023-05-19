@@ -84,7 +84,6 @@ class RunIris
 
                 $this->process($data, $results, $onProgress, $force);
                 $from += $this->chunkSize;
-
             } while ($from <= $total);
 
             update_option('skipped', $results['skipped']);
@@ -136,7 +135,7 @@ class RunIris
         foreach ($images as $value) {
             $progress = WP_CLI\Utils\make_progress_bar('Media regenerate', count($chunkResults));
             Debug::debug($progress);
-            dump($value->ID);
+
             WP_CLI::runcommand("media regenerate $value->ID", $options);
             // $ids[] = $value->ID;
             $progress->tick();
