@@ -175,9 +175,9 @@ class RunIris
                 'post_type' => 'attachment',
                 'post_status'    => 'inherit',
                 'post_mime_type' => ['image/jpeg', 'image/png'],
-                'posts_per_page' => 20,
+                'posts_per_page' => 10,
                 'orderby' => 'post_date',
-                'order' => 'asc',
+                'order' => 'desc',
             ]);
 
             $totalImages = sizeof($images);

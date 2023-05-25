@@ -19,7 +19,7 @@ class IrisConvert
     private $array_of_sizes_to_be_deleted   = [];
     private static $allowed_mime_type = ['image/jpeg', 'image/jpg', 'image/png'];
 
-    public function __construct($attachment_id, $metadata, $progress)
+    public function __construct($attachment_id, $metadata)
     {
         $this->file_path = get_attached_file($attachment_id);
         $this->file_dirname = pathinfo($this->file_path, PATHINFO_DIRNAME);
@@ -27,27 +27,36 @@ class IrisConvert
         $this->file_name_no_ext = pathinfo($this->file_path, PATHINFO_FILENAME);
         $this->image_metadata = $metadata;
         $this->image_id = $attachment_id;
-        $this->progress = $progress;
-        add_action('cli_init', [__CLASS__, 'generateCLI']);
     }
 
-    public function check_file_exists($attachment_id)
+    public function checkFileExists($attachment_id)
     {
         $file = get_attached_file($attachment_id);
 
         if (!file_exists($file)) {
-            return;
             $message = 'The uploaded file does not exist on the server. Encoding not possible.';
             Debug::debug('The uploaded file,' . $file . ' does exist on the server. Encoding not possible.', 1);
+            return;
+        }
+    }
+
+    public function checkFileType($attachment_id)
+    {
+        $file = get_attached_file($attachment_id);
+
+        if ($this->file_ext === 'webp') {
+            $message = 'This file is already webp format.';
+            Debug::debug('This file,' . $file . ' is already converted to webp.', 1);
+            return;
         }
     }
 
     public function create_array_of_sizes_to_be_converted($metadata)
     {
-        // // check if meta data image sizes is empty, if it is then run a wp thumbnail regenerate then continue
-        if (isset($metadata['sizes']) && empty($metadata['sizes'])) {
-            $this->regenerate_to_convert_array_of_images($metadata);
-        }
+        // // // check if meta data image sizes is empty, if it is then run a wp thumbnail regenerate then continue
+        // if (isset($metadata['sizes']) && empty($metadata['sizes'])) {
+        //     $this->regenerate_to_convert_array_of_images($metadata);
+        // }
 
         // push original file to the array
         array_push($this->array_of_sizes_to_be_converted, $this->file_path);
@@ -61,8 +70,6 @@ class IrisConvert
             }
         }
     }
-
-
 
     public function regenerate_to_convert_array_of_images($metadata)
     {
@@ -89,8 +96,7 @@ class IrisConvert
     public function convert_array_of_sizes()
     {
         switch ($this->file_ext) {
-            case 'webp':
-                break;
+
             case 'jpeg':
             case 'jpg':
 
@@ -101,37 +107,39 @@ class IrisConvert
                         $webp_file = $this->file_dirname . '/' . $this->file_name_no_ext . '.webp';
                         imagewebp($image, $webp_file, 80);
                         update_post_meta($this->image_id, '_wp_attached_file', wp_generate_attachment_metadata($this->image_id, $webp_file));
-                        $this->progress->tick();
+                        Debug::debug($this->file_name_no_ext . ' has been converted. This jpg is now webp!', 1);
                     } else {
 
                         $current_size = getimagesize($value);
                         $webp_file = $this->file_dirname . '/' . $this->file_name_no_ext . '-' . $current_size[0] . 'x' . $current_size[1] . '.webp';
                         imagewebp($image, $webp_file, 80);
                         update_post_meta($this->image_id, '_wp_attached_file', wp_generate_attachment_metadata($this->image_id, $webp_file));
-                        $this->progress->tick();
+                        Debug::debug($this->file_name_no_ext . ' has been converted. This jpg is now webp!', 1);
                     }
                 }
                 break;
 
             case 'png':
                 foreach ($this->array_of_sizes_to_be_converted as $key => $value) {
+                    Debug::debug($value);
                     $image = imagecreatefrompng($value);
                     imagepalettetotruecolor($image);
                     imagealphablending($image, true);
                     imagesavealpha($image, true);
+                    Debug::debug($image);
 
                     if (0 === $key) {
                         $webp_file = $this->file_dirname . '/' . $this->file_name_no_ext . '.webp';
                         imagewebp($image, $webp_file, 80);
                         update_post_meta($this->image_id, '_wp_attached_file', wp_update_attachment_metadata($this->image_id, $webp_file));
-                        $this->progress->tick();
+                        Debug::debug($this->file_name_no_ext . ' has been converted. This png is now webp!', 1);
                     } else {
 
                         $current_size = getimagesize($value);
                         $webp_file = $this->file_dirname . '/' . $this->file_name_no_ext . '-' . $current_size[0] . 'x' . $current_size[1] . '.webp';
                         imagewebp($image, $webp_file, 80);
                         update_post_meta($this->image_id, '_wp_attached_file', wp_update_attachment_metadata($this->image_id, $webp_file));
-                        $this->progress->tick();
+                        Debug::debug($this->file_name_no_ext . ' has been converted. This png is now webp!', 1);
                     }
                 }
                 break;

@@ -15,13 +15,13 @@ class CLI
 
     public function __invoke($args, $assoc_args)
     {
-        WP_CLI::log('');
+        WP_CLI::log('Running Iris');
 
         $images = new PostQuery([
             'post_type' => 'attachment',
             'post_status'    => 'inherit',
             'post_mime_type' => self::$allowed_mime_type,
-            'posts_per_page' => 20,
+            'posts_per_page' => 5,
             'orderby' => 'post_date',
             'order' => 'desc',
         ]);
@@ -31,58 +31,33 @@ class CLI
 
             $metadata = wp_get_attachment_metadata($image->ID);
             $attachment_id = $image->ID;
-            Iris::iris_webp_converter($metadata, $attachment_id, $progress);
+            Iris::webpConverter($metadata, $attachment_id);
         }
 
         WP_CLI::log('Iris complete.');
     }
 
-    // public function iris_convert()
-    // {
-    //     \WP_CLI::log('Iris is converting images...');
-
-    //     $images = new PostQuery([
-    //         'post_type' => 'attachment',
-    //         'post_status'    => 'inherit',
-    //         'post_mime_type' => ['image/jpeg', 'image/png'],
-    //         'posts_per_page' => -1,
-    //         'orderby' => 'post_date',
-    //         'order' => 'asc',
-    //     ]);
-
-    //     // check main image and all sizes and their mime types
-    //     foreach ($images as $image) {
-
-    //         $file = wp_get_original_image_path($image->id);
-    //         $image_mime = wp_getimagesize($file)['mime'];
-    //         $original_image = $image->_wp_attachment_metadata['original_image'];
-
-    //         if ($image_mime != 'image/webp') {
-    //             Iris::iris_webp_converter($image->_wp_attachment_metadata, $image->id);
-    //         }
-    //     }
-
-    //     WP_CLI::log('Iris complete.');
-    // }
-
-    public function runIris()
+    public function irisConvert()
     {
-        WP_CLI::log('Starting...');
-        $progress = WP_CLI\Utils\make_progress_bar('Running Iris', 0);
+        \WP_CLI::log('Iris is converting images...');
 
-        $results = (new RunIris())->iris(
-            function ($total) use (&$progress) {
-                $progress->setTotal($total);
-            },
-            function () use (&$progress) {
-                $progress->tick();
-            },
-            $assoc_args['force'] ?? false
-        );
+        $images = new PostQuery([
+            // 'p' => 3143,
+            'post_type' => 'attachment',
+            'post_status'    => 'inherit',
+            'post_mime_type' => self::$allowed_mime_type,
+            'posts_per_page' => 10,
+            'orderby' => 'post_date',
+            'order' => 'desc',
+        ]);
 
-        \WP_CLI::log('Iris finished.');
-        \WP_CLI::log('Skipped: ' . $results['skipped'] ?? 0);
-        \WP_CLI::log('Failed: ' . $results['failed'] ?? 0);
-        \WP_CLI::log('Updated: ' . $results['updated'] ?? 0);
+        // check main image and all sizes and their mime types
+        foreach ($images as $image) {
+            $metadata = wp_get_attachment_metadata($image->ID);
+            $attachment_id = $image->ID;
+            Iris::webpBulkConverter($metadata, $attachment_id);
+        }
+
+        WP_CLI::log('Iris complete.');
     }
 }

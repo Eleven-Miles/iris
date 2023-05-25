@@ -3,6 +3,7 @@
 namespace ElevenMiles\Iris;
 
 
+
 use ElevenMiles\Iris\WordPress\Admin\AdminPanel;
 use ElevenMiles\Iris\Helper\IrisHelper;
 use ElevenMiles\Iris\IrisConvert\IrisConvert;
@@ -12,12 +13,10 @@ use ElevenMiles\Iris\WordPress\Config;
 use ElevenMiles\Iris\WordPress\Scripts;
 
 include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+require_once(ABSPATH . 'libraries/action-scheduler/action-scheduler.php');
 
 /**
  * Class Iris
- * 
- * For debugging: Debug::debug($image_meta);
- * 
  */
 
 class Iris
@@ -54,16 +53,32 @@ class Iris
         add_action('plugins_loaded', [__CLASS__, 'check_for_offload_media']);
 
         // IRIS :)
-        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'iris_webp_converter'], 10, 3);
+        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'irisWebpConverter'], 10, 3);
+        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'iris'], 10, 3);
         add_action('delete_attachment', [__CLASS__, 'delete_webp_conversions'], 10);
+        add_action('iris_webp_upload_processor', [__CLASS__, 'webpConverter'], 10, 2);
+        add_action('iris_webp_bulk_processor', [__CLASS__, 'webpBulkConverter'], 10, 2);
     }
 
-    public static function iris_webp_converter($metadata, $attachment_id, $progress)
+    public static function webpUploadConverter($image_meta, $attachment_id)
     {
-        $iris_webp_converter = new IrisConvert($attachment_id, $metadata, $progress);
-        $iris_webp_converter->check_file_exists($attachment_id);
-        $iris_webp_converter->create_array_of_sizes_to_be_converted($metadata);
-        $iris_webp_converter->convert_array_of_sizes();
+        self::iris($image_meta, $attachment_id);
+    }
+
+    public static function webpBulkConverter($image_meta, $attachment_id)
+    {
+        self::irisWebpConverter($image_meta, $attachment_id);
+    }
+
+
+    public static function irisWebpConverter($metadata, $attachment_id)
+    {
+        as_enqueue_async_action('iris_webp_bulk_processor', [$metadata, $attachment_id], 'iris_webp_processor_task');
+        $irisWebpConverter = new IrisConvert($attachment_id, $metadata);
+        $irisWebpConverter->checkFileExists($attachment_id);
+        $irisWebpConverter->checkFileType($attachment_id);
+        $irisWebpConverter->create_array_of_sizes_to_be_converted($metadata);
+        $irisWebpConverter->convert_array_of_sizes();
 
         return $metadata;
     }
@@ -77,8 +92,9 @@ class Iris
     // }
 
 
-    public static function upload_webp_converter($image_meta, $attachment_id)
+    public static function iris($image_meta, $attachment_id)
     {
+        as_enqueue_async_action('iris_webp_processor', [$image_meta, $attachment_id], 'iris_webp_processor_task');
         $file = wp_get_original_image_path($attachment_id);
         $image_mime = wp_getimagesize($file)['mime'];
         $editor = wp_get_image_editor($file);
