@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     const iris = document.querySelectorAll('[data-behaviour="run-iris"]');
-    console.log(iris);
     iris.forEach((btn) => {
         const namespace = btn.dataset.ref;
         btn.addEventListener('click', async (e) => {
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 credentials: 'include',
                 headers: { 'X-WP-Nonce': wpApiSettings.nonce },
             });
-            console.log(response);
 
             if (response.status >= 300) {
                 console.log(response);

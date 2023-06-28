@@ -51,24 +51,15 @@ class AdminPanel
             $lastRun = new DateTime('@' . $lastRun);
         }
 
-        $context['iris_scheduled'] = get_option('force_iris');
-        $context['is_processing'] = get_option('processing');
-        $context['iris_in_progress'] =  $context['iris_scheduled'] || $context['is_processing'];
+        $context['iris_scheduled'] = get_option('iris');
         $context['namespace'] = self::WP_API_NAMESPACE;
-        $context['iris'] = [
-            'total_images' => get_option('total_images'),
-            'skipped' => get_option('skipped'),
-            'failed' => get_option('failed'),
-            'updated' => get_option('updated'),
-            'last_run' => $lastRun ? $lastRun->format('d/m/Y h:ia') : 'Never',
-        ];
 
         Timber::render(__DIR__ . "/views/actions.twig", $context);
     }
 
-    public static function forceIris()
+    public static function runIris()
     {
-        update_option('force_iris', true);
+        update_option('iris', true);
     }
 
     public static function canForceIris()
