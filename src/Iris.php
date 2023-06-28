@@ -20,8 +20,6 @@ require_once(ABSPATH . 'libraries/action-scheduler/action-scheduler.php');
 
 class Iris
 {
-    // move to .env
-    const WP_API_NAMESPACE = 'wyke/v1';
 
     /**
      * Iris constructor.
@@ -30,6 +28,11 @@ class Iris
     public function __construct()
     {
         new AdminPanel();
+        add_action('plugins_loaded', [__CLASS__, 'checkActionSchedulerPlugin']);
+        // Check for offload media plugin
+        if (!is_plugin_active('action-scheduler/action-scheduler.php')) {
+            return;
+        }
 
         // Switch default image editor to GD
         add_filter('wp_image_editors', [Config::class, 'defaultToGD']);

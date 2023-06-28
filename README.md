@@ -17,8 +17,3 @@ For debugging: `Debug::debug($image_meta);`
 ## Action Scheduler
 
 Iris uses [Action Scheduler](https://actionscheduler.org/usage/) to run webp convertion at scheduled intervals. This functionality helps when converting media libraies, and when images are uploaded in bulk. The GD image processing can become hit memory issues when bulk uploading images and return failed conversion. Action Scheduler helps to ensure that all images are converted by queuing up the conversions.
-
-To update Action Scheduler run the following commands:
-
-`git fetch subtree-action-scheduler trunk`
-`git subtree pull --prefix libraries/action-scheduler subtree-action-scheduler trunk --squash`
