@@ -1,0 +1,25 @@
+.iris h1 {
+    font-size: 40px;
+}
+
+.iris__stats {
+    display: flex;
+    flex-direction: column;
+}
+
+.iris__cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.iris__stat {
+    border: 1px solid grey;
+    padding: 30px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.iris__stat-value {
+    margin-left: 0;
+}
