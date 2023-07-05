@@ -12,7 +12,6 @@ use ElevenMiles\Iris\WordPress\Config;
 use ElevenMiles\Iris\WordPress\Scripts;
 
 include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-require_once(ABSPATH . 'libraries/action-scheduler/action-scheduler.php');
 
 /**
  * Class Iris
@@ -28,9 +27,9 @@ class Iris
     public function __construct()
     {
         new AdminPanel();
-        add_action('plugins_loaded', [__CLASS__, 'checkActionSchedulerPlugin']);
-        // Check for offload media plugin
-        if (!is_plugin_active('action-scheduler/action-scheduler.php')) {
+
+        // Check for action scheduler and offload media plugin
+        if (!is_plugin_active('action-scheduler/action-scheduler.php') && !is_plugin_active('amazon-s3-and-cloudfront-pro/amazon-s3-and-cloudfront.php')) {
             return;
         }
 
@@ -81,8 +80,8 @@ class Iris
         $irisWebpConverter = new IrisConvert($attachment_id, $metadata);
 
         if ($irisWebpConverter->checkFileExists($attachment_id) && $irisWebpConverter->checkFileType($attachment_id)) {
-            $irisWebpConverter->create_array_of_sizes_to_be_converted($metadata);
-            $irisWebpConverter->convert_array_of_sizes();
+            $irisWebpConverter->createArrayOfSizesToBeConverted($metadata);
+            $irisWebpConverter->convertArrayOfSizes();
         }
 
         return $metadata;

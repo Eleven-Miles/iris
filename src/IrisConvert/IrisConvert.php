@@ -69,7 +69,7 @@ class IrisConvert
      * @return array
      */
 
-    public function create_array_of_sizes_to_be_converted($metadata)
+    public function createArrayOfSizesToBeConverted($metadata)
     {
         array_push($this->array_of_sizes_to_be_converted, $this->file_path);
 
@@ -89,7 +89,7 @@ class IrisConvert
      * @return array
      */
 
-    public function convert_array_of_sizes()
+    public function convertArrayOfSizes()
     {
         switch ($this->file_ext) {
 

@@ -57,7 +57,7 @@ class Config
      * @param string $filetypes
      * @return string
      */
-    public function ensureMultisitesSupportWebp($filetypes)
+    public static function ensureMultisitesSupportWebp($filetypes)
     {
         $filetypes = explode(' ', $filetypes);
         if (!in_array('webp', $filetypes, true)) {
