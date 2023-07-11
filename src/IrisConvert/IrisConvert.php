@@ -40,13 +40,14 @@ class IrisConvert
 
     public function checkFileExists($attachment_id)
     {
-        $file = get_attached_file($attachment_id);
 
         $as3cf_item = Media_Library_Item::get_by_source_id($attachment_id);
 
         if (!empty($as3cf_item) && $as3cf_item->is_verified()) {
             return true;
         }
+
+        $file = get_attached_file($attachment_id);
 
         if (!file_exists($file)) {
             $message = 'The uploaded file does not exist on the server. Encoding not possible.';
