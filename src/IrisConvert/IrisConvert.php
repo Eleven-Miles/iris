@@ -2,6 +2,7 @@
 
 namespace ElevenMiles\Iris\IrisConvert;
 
+use DeliciousBrains\WP_Offload_Media\Items\Media_Library_Item;
 use ElevenMiles\Iris\Debug;
 
 class IrisConvert
@@ -39,13 +40,22 @@ class IrisConvert
 
     public function checkFileExists($attachment_id)
     {
+
+        $as3cf_item = Media_Library_Item::get_by_source_id($attachment_id);
+
+        if (!empty($as3cf_item) && $as3cf_item->is_verified()) {
+            return true;
+        }
+
         $file = get_attached_file($attachment_id);
 
         if (!file_exists($file)) {
             $message = 'The uploaded file does not exist on the server. Encoding not possible.';
             Debug::debug('The uploaded file,' . $file . ' does exist on the server. Encoding not possible.', 1);
-            return;
+            return false;
         }
+
+        return true;
     }
 
     /**
