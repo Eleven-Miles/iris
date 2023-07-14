@@ -56,8 +56,7 @@ class Iris
 
         add_action('plugins_loaded', [__CLASS__, 'check_for_offload_media']);
 
-        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'webpUploadConverter'], 10, 2);
-        add_action('webp_upload_process_schedule', [__CLASS__, 'convertImageOnUplodad'], 10, 2);
+        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10, 2);
         add_filter('wp_generate_attachment_metadata', [__CLASS__, 'webpConverter'], 10, 1);
         add_action('webp_bulk_process_schedule', [__CLASS__, 'webpBulkConverter'], 10, 1);
     }
@@ -70,16 +69,6 @@ class Iris
     public static function webpBulkConverter($attachment_id)
     {
         self::webpConverter($attachment_id);
-    }
-
-    /**
-     * @param $attachment_id
-     * @return mixed
-     */
-
-    public static function webpUploadConverter($image_meta, $attachment_id)
-    {
-        self::convertImageOnUplodad($image_meta, $attachment_id);
     }
 
     /**
@@ -103,7 +92,6 @@ class Iris
 
     public static function convertImageOnUplodad($image_meta, $attachment_id)
     {
-        as_enqueue_async_action('webp_upload_process_schedule', [$attachment_id], 'webpUploadConverterTask');
         $file = wp_get_original_image_path($attachment_id);
         $image_mime = wp_getimagesize($file)['mime'];
         $editor = wp_get_image_editor($file);
