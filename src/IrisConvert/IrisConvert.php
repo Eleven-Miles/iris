@@ -111,14 +111,18 @@ class IrisConvert
                     if (0 === $key) {
                         $webp_file = $this->file_dirname . '/' . $this->file_name_no_ext . '.webp';
                         imagewebp($image, $webp_file, 80);
-                        wp_update_attachment_metadata($this->image_id, '_wp_attached_file', wp_generate_attachment_metadata($this->image_id, $webp_file));
+
+                        $webp_meta = wp_generate_attachment_metadata($this->image_id, $webp_file);
+                        wp_update_attachment_metadata($this->image_id, $webp_meta);
                         Debug::debug($this->file_name_no_ext . ' has been converted. This jpg is now webp!', 1);
                     } else {
 
                         $current_size = getimagesize($value);
                         $webp_file = $this->file_dirname . '/' . $this->file_name_no_ext . '-' . $current_size[0] . 'x' . $current_size[1] . '.webp';
                         imagewebp($image, $webp_file, 80);
-                        wp_update_attachment_metadata($this->image_id, '_wp_attached_file', wp_generate_attachment_metadata($this->image_id, $webp_file));
+
+                        $webp_meta = wp_generate_attachment_metadata($this->image_id, $webp_file);
+                        wp_update_attachment_metadata($this->image_id, $webp_meta);
                         Debug::debug($this->file_name_no_ext . ' has been converted. This jpg is now webp!', 1);
                     }
                 }
@@ -134,14 +138,18 @@ class IrisConvert
                     if (0 === $key) {
                         $webp_file = $this->file_dirname . '/' . $this->file_name_no_ext . '.webp';
                         imagewebp($image, $webp_file, 80);
-                        wp_update_attachment_metadata($this->image_id, '_wp_attached_file', wp_update_attachment_metadata($this->image_id, [$webp_file]));
+
+                        $webp_meta = wp_generate_attachment_metadata($this->image_id, $webp_file);
+                        wp_update_attachment_metadata($this->image_id, $webp_meta);
                         Debug::debug($this->file_name_no_ext . ' has been converted. This png is now webp!', 1);
                     } else {
 
                         $current_size = getimagesize($value);
                         $webp_file = $this->file_dirname . '/' . $this->file_name_no_ext . '-' . $current_size[0] . 'x' . $current_size[1] . '.webp';
                         imagewebp($image, $webp_file, 80);
-                        wp_update_attachment_metadata($this->image_id, '_wp_attached_file', wp_update_attachment_metadata($this->image_id, $webp_file));
+
+                        $webp_meta = wp_generate_attachment_metadata($this->image_id, $webp_file);
+                        wp_update_attachment_metadata($this->image_id, $webp_meta);
                         Debug::debug($this->file_name_no_ext . ' has been converted. This png is now webp!', 1);
                     }
                 }

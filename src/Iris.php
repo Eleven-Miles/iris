@@ -119,8 +119,8 @@ class Iris
 
                 $image_meta['file'] = $webp_file;
 
-                wp_update_attachment_metadata($attachment_id, $image_meta);
-                update_post_meta($attachment_id, '_wp_attached_file', $webp_file);
+                $webp_meta = wp_generate_attachment_metadata($attachment_id, $webp_file);
+                wp_update_attachment_metadata($attachment_id, $webp_meta);
             } else {
                 error_log(__('Unable to save the original in webp format ') . $file);
             }
