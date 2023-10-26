@@ -2,6 +2,8 @@
 
 namespace ElevenMiles\Iris\WordPress\CLI;
 
+use ElevenMiles\Iris\Debug;
+use Timber\Post;
 use Timber\PostQuery;
 use WP_CLI;
 
@@ -29,6 +31,24 @@ class CLI
             as_enqueue_async_action('webp_bulk_process_schedule', [$attachment_id], 'webpBulkConverterTask');
         }
 
+        WP_CLI::log('Iris complete.');
+    }
+
+    public static function convertById($id)
+    {
+        $image_id = $id[0];
+
+        $image = new PostQuery([
+            'p' => $image_id,
+            'post_type' => 'attachment',
+            'post_status'    => 'inherit',
+            'post_mime_type' => self::$allowed_mime_type,
+            'posts_per_page' => 1,
+        ]);
+
+        $attachment_id = $image[0]->ID;
+
+        as_enqueue_async_action('webp_bulk_process_schedule', [$attachment_id], 'webpBulkConverterTask');
         WP_CLI::log('Iris complete.');
     }
 }

@@ -10,6 +10,7 @@ class Register
     {
         if (defined('WP_CLI') && WP_CLI) {
             WP_CLI::add_command('iris', CLI::class);
+            WP_CLI::add_command('iris-id', [CLI::class, 'convertById']);
         }
     }
 }
