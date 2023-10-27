@@ -36,7 +36,11 @@ class CLI
 
     public static function convertById($id)
     {
-        $image_id = $id[0];
+        if (empty($id[0])) {
+            WP_CLI::error('Please provide an attachment ID');
+        } else {
+            $image_id = $id[0];
+        }
 
         $image = new PostQuery([
             'p' => $image_id,
