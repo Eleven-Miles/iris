@@ -4,6 +4,7 @@ namespace ElevenMiles\Iris\IrisConvert;
 
 use DeliciousBrains\WP_Offload_Media\Items\Media_Library_Item;
 use ElevenMiles\Iris\Debug;
+use ElevenMiles\Iris\Iris;
 
 class IrisConvert
 {
@@ -102,7 +103,7 @@ class IrisConvert
     public function convertArrayOfSizes()
     {
         // Remove wp_generate_attachment_metadata action
-        remove_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10);
+        remove_filter('wp_generate_attachment_metadata', [Iris::class, 'convertImageOnUplodad'], 10);
         switch ($this->file_ext) {
 
             case 'jpeg':
@@ -162,6 +163,6 @@ class IrisConvert
         }
 
         // add action wp_generate_attachment_metadata
-        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10, 2);
+        add_filter('wp_generate_attachment_metadata', [Iris::class, 'convertImageOnUplodad'], 10, 2);
     }
 }
