@@ -2,7 +2,7 @@
 
 namespace ElevenMiles\Iris\Helper;
 
-define('IRIS_ASSET_PATH', get_template_directory_uri() . '/vendor/eleven-miles/iris/src/assets');
+define('IRIS_ASSET_PATH', '/vendor/eleven-miles/iris/src/assets');
 
 class IrisHelper
 {
