@@ -57,7 +57,7 @@ class Iris
         add_action('plugins_loaded', [__CLASS__, 'check_for_offload_media']);
 
         add_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10, 2);
-        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'webpConverter'], 10, 1);
+        // add_filter('wp_generate_attachment_metadata', [__CLASS__, 'webpConverter'], 10, 1);
         add_action('webp_bulk_process_schedule', [__CLASS__, 'webpBulkConverter'], 10, 1);
     }
 
@@ -92,11 +92,17 @@ class Iris
 
     public static function convertImageOnUplodad($image_meta, $attachment_id)
     {
+        // Remove wp_generate_attachment_metadata action
+        remove_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10);
+
         $file = wp_get_original_image_path($attachment_id);
         $image_mime = wp_getimagesize($file)['mime'];
         $editor = wp_get_image_editor($file);
 
         if (is_wp_error($editor)) {
+            // add action wp_generate_attachment_metadata
+            add_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10, 2);
+
             return $image_meta;
         }
 
@@ -121,10 +127,14 @@ class Iris
 
                 $webp_meta = wp_generate_attachment_metadata($attachment_id, $webp_file);
                 wp_update_attachment_metadata($attachment_id, $webp_meta);
+                update_post_meta($attachment_id, '_wp_attached_file', $webp_file);
             } else {
                 error_log(__('Unable to save the original in webp format ') . $file);
             }
         }
+
+        // add action wp_generate_attachment_metadata
+        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10, 2);
 
         return $image_meta;
     }

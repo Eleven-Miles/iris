@@ -9,7 +9,6 @@ use Timber\PostQuery;
 
 class AdminPanel
 {
-    const WP_API_NAMESPACE = 'wyke/v1';
 
     public function __construct()
     {
@@ -52,7 +51,7 @@ class AdminPanel
         }
 
         $context['iris_scheduled'] = get_option('iris');
-        $context['namespace'] = self::WP_API_NAMESPACE;
+        $context['namespace'] = get_env('WP_API_NAMESPACE');
 
         Timber::render(__DIR__ . "/views/actions.twig", $context);
     }

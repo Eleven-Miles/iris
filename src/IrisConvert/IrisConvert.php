@@ -101,6 +101,8 @@ class IrisConvert
 
     public function convertArrayOfSizes()
     {
+        // Remove wp_generate_attachment_metadata action
+        remove_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10);
         switch ($this->file_ext) {
 
             case 'jpeg':
@@ -158,5 +160,8 @@ class IrisConvert
             default:
                 return false;
         }
+
+        // add action wp_generate_attachment_metadata
+        add_filter('wp_generate_attachment_metadata', [__CLASS__, 'convertImageOnUplodad'], 10, 2);
     }
 }
